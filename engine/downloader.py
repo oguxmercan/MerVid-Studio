@@ -60,14 +60,18 @@ class DownloadTask:
         self.cancelled = False
         self.thread = None
         self.final_filepath = None
+        is_debrid = options.get('is_debrid') or bool(options.get('download_url'))
+        title = options.get('title', 'Initializing...')
+        ext = os.path.splitext(title)[1].replace('.', '').upper() if '.' in title else 'DIRECT'
+
         self.status_data = {
             "id": download_id,
             "url": options.get('url'),
-            "title": options.get('title', 'Initializing...'),
+            "title": title,
             "thumbnail": options.get('thumbnail'),
-            "mode": options.get('mode', 'video'),
+            "mode": "DEBRID" if is_debrid else options.get('mode', 'video'),
             "resolution": options.get('resolution', 'best'),
-            "format": options.get('format', 'mp4'),
+            "format": ext if is_debrid else options.get('format', 'mp4'),
             "status": "queued", # queued, downloading, muxing, completed, error, cancelled
             "percent": 0.0,
             "speed": "0.0 MB/s",

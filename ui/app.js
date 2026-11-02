@@ -298,9 +298,22 @@ async function inspectUrl() {
 
 // Render Single Video Card
 function renderSingleMediaView(info) {
-  document.getElementById('mediaThumbnail').src = info.thumbnail || "";
+  document.getElementById('mediaThumbnail').src = info.thumbnail || "mervid-studio.png";
   document.getElementById('mediaTitle').textContent = info.title;
   document.getElementById('mediaDuration').textContent = info.duration_string || "00:00";
+
+  if (info.is_debrid) {
+    const ext = info.title && info.title.includes('.') ? info.title.split('.').pop().toUpperCase() : 'FILE';
+    formatSelect.innerHTML = `<option value="${ext.toLowerCase()}" selected>Orijinal (${ext})</option>`;
+  } else {
+    formatSelect.innerHTML = `
+      <option value="mp4" selected>MP4 (Video)</option>
+      <option value="mkv">MKV (Video)</option>
+      <option value="mp3">MP3 (320k Ses)</option>
+      <option value="flac">FLAC (Kayıpsız Ses)</option>
+      <option value="wav">WAV (Ham Ses)</option>
+    `;
+  }
 
   updateQualityOptions();
 
@@ -379,6 +392,10 @@ async function startSingleDownload() {
 
   const fmt = formatSelect.value;
   const isAudio = (fmt === 'mp3' || fmt === 'flac' || fmt === 'wav');
+  const isDebrid = currentMediaInfo.is_debrid || false;
+  const originalExt = currentMediaInfo.title && currentMediaInfo.title.includes('.')
+    ? currentMediaInfo.title.split('.').pop().toUpperCase()
+    : 'FILE';
 
   const threadsVal = document.getElementById('threadsSelect') ? document.getElementById('threadsSelect').value : "8";
 
@@ -386,9 +403,9 @@ async function startSingleDownload() {
     url: currentMediaInfo.url,
     title: currentMediaInfo.title,
     thumbnail: currentMediaInfo.thumbnail,
-    mode: isAudio ? 'audio' : 'video',
+    mode: isDebrid ? 'DEBRID' : (isAudio ? 'audio' : 'video'),
     resolution: qualitySelect.value,
-    format: fmt,
+    format: isDebrid ? originalExt : fmt,
     audio_quality: qualitySelect.value,
     save_banner: document.getElementById('saveBannerCheck') ? document.getElementById('saveBannerCheck').checked : true,
     sponsorblock: document.getElementById('sponsorBlockCheck') ? document.getElementById('sponsorBlockCheck').checked : true,
