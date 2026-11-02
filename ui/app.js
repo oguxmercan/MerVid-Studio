@@ -644,8 +644,10 @@ async function refreshRdStatus() {
 
   try {
     const res = await window.pywebview.api.get_rd_status();
-    if (res && res.valid) {
-      statusText.textContent = `Aktif • ${res.username} (${res.type.toUpperCase()}) - ${res.days_left} gün kaldı`;
+    if (res && (res.valid || res.has_token || res.success)) {
+      const isPrem = res.is_premium;
+      const exp = res.expiration ? ` • Bitiş: ${res.expiration}` : '';
+      statusText.textContent = `Aktif • ${res.username} (${isPrem ? 'PREMIUM' : 'STANDART'})${exp}`;
       statusText.style.color = '#2CF09E';
     } else {
       statusText.textContent = `Bağlı Değil • API Token Yok`;

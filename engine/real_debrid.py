@@ -108,6 +108,7 @@ def verify_rd_token(token: str = None) -> dict:
 
     return {
         "has_token": True,
+        "valid": True,
         "success": True,
         "is_premium": is_premium,
         "username": u.get('username'),
