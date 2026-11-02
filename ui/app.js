@@ -22,6 +22,12 @@ const toastEl = document.getElementById('toast');
 
 // Initialize
 window.addEventListener('DOMContentLoaded', () => {
+  const savedLang = localStorage.getItem('mervid_language') || 'auto';
+  if (typeof applyLanguage === 'function') {
+    applyLanguage(savedLang);
+    const langSelect = document.getElementById('languageSelect');
+    if (langSelect) langSelect.value = savedLang;
+  }
   setupTabs();
   setupEventListeners();
   waitForPywebviewApi();
@@ -50,6 +56,11 @@ async function onApiReady() {
       downloadDestination = settings.save_path;
       const el = document.getElementById('currentDownloadPathText');
       if (el) el.textContent = downloadDestination;
+
+      const lang = settings.language || localStorage.getItem('mervid_language') || 'auto';
+      const langSelect = document.getElementById('languageSelect');
+      if (langSelect) langSelect.value = lang;
+      if (typeof applyLanguage === 'function') applyLanguage(lang);
     }
     refreshCookieStatus();
     refreshRdStatus();
@@ -85,6 +96,21 @@ function setupTabs() {
 }
 
 function setupEventListeners() {
+  // Language Select
+  const langSelect = document.getElementById('languageSelect');
+  if (langSelect) {
+    langSelect.addEventListener('change', async () => {
+      const chosen = langSelect.value;
+      if (typeof applyLanguage === 'function') applyLanguage(chosen);
+      try {
+        await window.pywebview.api.save_settings({ language: chosen });
+      } catch (e) {}
+      if (typeof getTranslation === 'function') {
+        showToast(getTranslation('setting_language') + ": " + (chosen === 'auto' ? getTranslation('lang_auto') : chosen.toUpperCase()));
+      }
+    });
+  }
+
   // Paste Button
   pasteBtn.addEventListener('click', async () => {
     try {
@@ -513,11 +539,17 @@ function renderActiveDownloads(downloads) {
     const card = document.createElement('div');
     card.className = "download-card";
 
+    const statusCompleted = typeof getTranslation === 'function' ? getTranslation('status_completed') : 'TAMAMLANDI';
+    const statusError = typeof getTranslation === 'function' ? getTranslation('status_error') : 'HATA';
+    const btnOpenText = typeof getTranslation === 'function' ? getTranslation('btn_open') : 'Aç';
+    const btnShowFolderText = typeof getTranslation === 'function' ? getTranslation('btn_show_folder') : 'Klasörde Göster';
+    const btnCancelText = typeof getTranslation === 'function' ? getTranslation('btn_cancel') : 'İptal';
+
     let statusBadge = `<span class="dl-badge status-dl">${d.status.toUpperCase()}</span>`;
     if (d.status === 'completed') {
-      statusBadge = `<span class="dl-badge status-ok">TAMAMLANDI</span>`;
+      statusBadge = `<span class="dl-badge status-ok">${statusCompleted}</span>`;
     } else if (d.status === 'error') {
-      statusBadge = `<span class="dl-badge" style="color:#ff4d6d;border-color:red;">HATA</span>`;
+      statusBadge = `<span class="dl-badge" style="color:#ff4d6d;border-color:red;">${statusError}</span>`;
     }
 
     card.innerHTML = `
@@ -533,16 +565,16 @@ function renderActiveDownloads(downloads) {
       </div>
       <div class="dl-metrics">
         <span>%${d.percent} • ${d.downloaded} / ${d.total}</span>
-        <span>Hız: ${d.speed}</span>
-        <span>Kalan: ${d.eta}</span>
+        <span>${d.speed}</span>
+        <span>${d.eta}</span>
       </div>
       <div class="dl-actions">
         ${d.filepath ? `
-          <button class="btn-sm" onclick="openFile('${encodeURIComponent(d.filepath)}')">Aç</button>
-          <button class="btn-sm" onclick="openFolder('${encodeURIComponent(d.filepath)}')">Klasörde Göster</button>
+          <button class="btn-sm" onclick="openFile('${encodeURIComponent(d.filepath)}')">${btnOpenText}</button>
+          <button class="btn-sm" onclick="openFolder('${encodeURIComponent(d.filepath)}')">${btnShowFolderText}</button>
         ` : ''}
         ${d.status === 'downloading' || d.status === 'queued' ? `
-          <button class="btn-sm" style="color:#ff4d6d;" onclick="cancelDownload('${d.id}')">İptal</button>
+          <button class="btn-sm" style="color:#ff4d6d;" onclick="cancelDownload('${d.id}')">${btnCancelText}</button>
         ` : ''}
       </div>
     `;
@@ -576,11 +608,15 @@ async function refreshHistory() {
 }
 
 function renderHistoryList(items) {
-  historyCount.textContent = `${items.length} dosya`;
+  historyCount.textContent = `${items.length} ${typeof getTranslation === 'function' ? (items.length === 1 ? 'file' : 'files') : 'dosya'}`;
+  const emptyMsg = typeof getTranslation === 'function' ? getTranslation('history_empty') : 'Henüz indirme geçmişi yok.';
   if (items.length === 0) {
-    historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px 0;">Henüz indirme geçmişi yok.</div>`;
+    historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 40px 0;">${emptyMsg}</div>`;
     return;
   }
+
+  const btnPlayText = typeof getTranslation === 'function' ? getTranslation('btn_play') : 'Oynat';
+  const btnShowFolderText = typeof getTranslation === 'function' ? getTranslation('btn_show_folder') : 'Göster';
 
   historyList.innerHTML = "";
   items.forEach(item => {
@@ -598,8 +634,8 @@ function renderHistoryList(items) {
         </div>
       </div>
       <div style="display: flex; gap: 6px;">
-        <button class="btn-sm" onclick="openFile('${encodeURIComponent(item.filepath)}')">Oynat</button>
-        <button class="btn-sm" onclick="openFolder('${encodeURIComponent(item.filepath)}')">Göster</button>
+        <button class="btn-sm" onclick="openFile('${encodeURIComponent(item.filepath)}')">${btnPlayText}</button>
+        <button class="btn-sm" onclick="openFolder('${encodeURIComponent(item.filepath)}')">${btnShowFolderText}</button>
       </div>
     `;
     historyList.appendChild(row);

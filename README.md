@@ -43,6 +43,16 @@
 - **Cookie Vault**: Safely import Netscape `cookies.txt` or paste session cookies locally to unlock age-restricted, subscriber-only, or private videos with 100% privacy.
 - **Multi-Thread Saturation**: Configurable 4, 8, or 16 multi-channel connections to maximize your fiber bandwidth.
 
+### 5. 🌍 Multi-Language & Auto System Detection (7 Languages)
+MerVid Studio automatically detects your operating system language upon launch. If your system language is not in the list, it gracefully defaults to **English**. You can also manually switch languages at any time from the Settings tab without restarting:
+- 🇬🇧 / 🇺🇸 **English** (Default / Global)
+- 🇹🇷 **Türkçe** (Turkish)
+- 🇨🇳 **简体中文** (Simplified Chinese)
+- 🇪🇸 **Español** (Spanish)
+- 🇩🇪 **Deutsch** (German)
+- 🇳🇱 **Nederlands** (Dutch)
+- 🇵🇹 / 🇧🇷 **Português** (Portuguese)
+
 ---
 
 ## 📸 User Interface
