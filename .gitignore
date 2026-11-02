@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller / Build outputs
+build/
+dist/
+*.spec
+
+# Large binaries (>100MB exceeds GitHub push limits)
+binaries/ffmpeg.exe
+
+# Local configs, history & user session data
+cookies.txt
+history.json
+settings.json
+*.log
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini

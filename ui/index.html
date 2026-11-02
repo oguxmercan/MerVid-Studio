@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MerVid Studio</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Header (Centered Logo & Version Badge) -->
+  <header>
+    <div class="logo-area">
+      <img src="mervid-studio.png" class="logo-img" alt="MerVid Studio">
+      <div class="logo-title">MERVID STUDIO</div>
+      <span class="badge-pro">v1.0.0</span>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main>
+    <!-- TAB 1: İNDİRİCİ (Matches the screenshot layout) -->
+    <section id="tab-indirici" class="tab-content active">
+      <div class="hero-wrapper">
+        <h1>Video ve Ses İndir</h1>
+        <p class="hero-sub">Desteklenen yüzlerce platformdan DRM'siz, yüksek kaliteli medya indirin.</p>
+
+        <!-- Input Bar with Search Link Icon, Paste Button, and Analyze Button -->
+        <div class="search-wrapper">
+          <div class="search-bar">
+            <!-- Link Icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            <input type="text" id="urlInput" placeholder="Paste link from YouTube, Instagram, TikTok, X, Reddit, Facebook...">
+            <div class="spinner" id="extractSpinner"></div>
+          </div>
+          <button class="btn-paste" id="pasteBtn" title="Panodaki linki yapıştır">Paste</button>
+          <button class="btn-analyze" id="analyzeBtn" title="Linki çözümle (Enter)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Analyze</span>
+          </button>
+        </div>
+
+        <!-- Platform tags pill -->
+        <div class="platforms-pill">
+          YouTube • Instagram • TikTok • X • Rapidgator • Mega • 1fichier • Torrents
+        </div>
+      </div>
+
+      <!-- Single Media Inspection Card (Floating Card matching screenshot) -->
+      <div class="media-card" id="mediaCard">
+        <div class="media-layout">
+          <!-- Thumbnail Column -->
+          <div class="media-thumb-col">
+            <div class="media-thumb-box">
+              <img id="mediaThumbnail" src="" alt="Thumbnail">
+              <span class="thumb-duration" id="mediaDuration">00:00</span>
+            </div>
+            <!-- Quick Banner Download Button -->
+            <button class="btn-banner-quick" id="downloadBannerBtn" title="En yüksek çözünürlüklü banner/kapak görselini indir">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span>Banner İndir (.jpg)</span>
+            </button>
+          </div>
+
+          <!-- Info & Options Column -->
+          <div class="media-info-col">
+            <h3 class="media-title" id="mediaTitle">Video Başlığı</h3>
+
+            <!-- Dropdowns Row (Çözünürlük & Format) -->
+            <div class="dropdowns-row">
+              <select class="custom-select" id="qualitySelect">
+                <!-- Dynamically populated: YouTube 4K, 1080p FHD, vb. -->
+              </select>
+              <select class="custom-select" id="formatSelect">
+                <option value="mp4" selected>MP4 (Video)</option>
+                <option value="mkv">MKV (Video)</option>
+                <option value="mp3">MP3 (320k Ses)</option>
+                <option value="flac">FLAC (Kayıpsız Ses)</option>
+                <option value="wav">WAV (Ham Ses)</option>
+              </select>
+            </div>
+
+            <!-- Action Row (Altyazı, SponsorBlock, Banner İndir, İndirmeyi Başlat) -->
+            <div class="action-row">
+              <div class="checkboxes-group">
+                <label class="checkbox-label" title="Altyazıları videoya göm">
+                  <input type="checkbox" id="embedSubtitlesCheck">
+                  Altyazı
+                </label>
+                <label class="checkbox-label" title="Sponsorlu bölümleri ve introları otomatik atla">
+                  <input type="checkbox" id="sponsorBlockCheck" checked>
+                  SponsorBlock
+                </label>
+                <label class="checkbox-label" title="Videonun yüksek kaliteli kapak resmini de kaydet">
+                  <input type="checkbox" id="saveBannerCheck" checked>
+                  Banner
+                </label>
+              </div>
+
+              <!-- Start Download Button -->
+              <button class="btn-start-download" id="startDownloadBtn">
+                İndirmeyi Başlat
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Playlist Batch Panel (for playlists & channels) -->
+      <div class="playlist-panel" id="playlistPanel">
+        <div class="playlist-header">
+          <div>
+            <h3 class="playlist-title" id="playlistTitle">Oynatma Listesi</h3>
+            <span style="font-size: 11px; color: var(--text-dim);" id="playlistCount">0 video bulundu</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <label class="checkbox-label" style="font-size: 11px;">
+              <input type="checkbox" id="playlistBannerCheck" checked>
+              Bannerlar
+            </label>
+            <button class="btn-sm" onclick="toggleSelectAllPlaylist(true)">Tümü</button>
+            <button class="btn-sm" onclick="toggleSelectAllPlaylist(false)">Kaldır</button>
+            <button class="btn-sm" id="downloadPlaylistBtn" style="background: var(--accent); color: #08080a; font-weight: 800;">Seçilenleri İndir</button>
+          </div>
+        </div>
+        <div class="playlist-items-list" id="playlistItemsList">
+          <!-- Rows dynamically added -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: İNDİRİLENLER (Active & Queued Downloads) -->
+    <section id="tab-indirilenler" class="tab-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 18px; font-weight: 800;">İndirilenler & Aktif Sıra</h2>
+        <span style="font-size: 12px; color: var(--text-dim);" id="activeDlCount">0 işlem</span>
+      </div>
+      <div class="downloads-container" id="downloadsContainer">
+        <div style="text-align: center; color: var(--text-muted); padding: 50px 0;">
+          Şu anda aktif indirme bulunmuyor. Link yapıştırarak indirme başlatabilirsiniz.
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: GEÇMİŞ (Download History) -->
+    <section id="tab-gecmis" class="tab-content">
+      <div class="history-controls">
+        <input type="text" class="search-box" id="historySearch" placeholder="İndirilen medyaları ara...">
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <span style="font-size: 12px; color: var(--text-dim);" id="historyCount">0 dosya</span>
+          <button class="btn-sm" id="clearHistoryBtn" style="color: #ff4d6d;">Geçmişi Temizle</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList">
+        <!-- History items -->
+      </div>
+    </section>
+
+    <!-- TAB 4: AYARLAR (Contains Settings + Cookie Vault) -->
+    <section id="tab-ayarlar" class="tab-content">
+      <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 16px;">Uygulama Ayarları</h2>
+
+      <!-- Download Directory -->
+      <div class="settings-card">
+        <div class="settings-info">
+          <h4>İndirme Klasörü</h4>
+          <p id="currentDownloadPathText">C:\Users\...\Downloads\MerVid_Downloads</p>
+        </div>
+        <button class="btn-sm" id="browseDownloadDirBtn">Klasörü Değiştir</button>
+      </div>
+
+      <!-- Threads / Saturation -->
+      <div class="settings-card">
+        <div class="settings-info">
+          <h4>Çok Kanallı Hızlandırma</h4>
+          <p>Bant genişliğini doyuran paralel bağlantı sayısı</p>
+        </div>
+        <select class="custom-select" id="threadsSelect" style="width: 150px;">
+          <option value="16">16 Kanal (Fiber Hız)</option>
+          <option value="8" selected>8 Kanal (Standart Hızlı)</option>
+          <option value="4">4 Kanal (Dengeli)</option>
+        </select>
+      </div>
+
+      <!-- REAL-DEBRID INTEGRATION -->
+      <div class="settings-section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span>Real-Debrid Entegrasyonu (Rapidgator, Mega, 1fichier, Torrent)</span>
+      </div>
+
+      <div class="cookie-vault-box">
+        <div class="cookie-status-bar">
+          <div>
+            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 800;">Real-Debrid Durumu</div>
+            <div style="font-size: 13px; font-weight: 800; color: #71717a;" id="rdStatusText">Kontrol ediliyor...</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-sm" onclick="openExternalUrl('https://real-debrid.com/apitoken')">API Token Al</button>
+            <button class="btn-sm" id="removeRdTokenBtn" style="color: #ff4d6d;">Kaldır</button>
+          </div>
+        </div>
+
+        <p style="font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-bottom: 8px;">
+          Rapidgator, 1fichier, Turbobit, Mega ve Torrent linklerindeki hız kısıtlamalarını kaldırıp doğrudan gigabit hızında indirmek için Real-Debrid API tokeninizi kaydedin.
+        </p>
+
+        <div style="display: flex; gap: 8px;">
+          <input type="password" class="custom-select" id="rdTokenInput" placeholder="Real-Debrid API Token (Örn: J83KLOP...)" style="flex: 1; height: 38px; padding: 0 12px; font-family: monospace; font-size: 12px;">
+          <button class="btn-sm" id="saveRdTokenBtn" style="background: var(--accent); color: #08080a; font-weight: 800; white-space: nowrap;">Kaydet & Doğrula</button>
+        </div>
+      </div>
+
+      <!-- COOKIE KASASI (Moved inside Settings as requested) -->
+      <div class="settings-section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Cookie Kasası (Özel ve Üyelere Özel İçerikler)</span>
+      </div>
+
+      <div class="cookie-vault-box">
+        <div class="cookie-status-bar">
+          <div>
+            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 800;">Durum</div>
+            <div style="font-size: 13px; font-weight: 800; color: #2CF09E;" id="cookieStatusText">Aktif / Hazır</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-sm" id="selectCookieFileBtn">cookies.txt Yükle</button>
+            <button class="btn-sm" id="clearCookiesBtn" style="color: #ff4d6d;">Çerezleri Sil</button>
+          </div>
+        </div>
+
+        <p style="font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-bottom: 8px;">
+          YouTube, Netflix veya diğer servislerde yaş sınırlı ya da üyelik gerektiren DRM'siz videoları indirmek için tarayıcınızdan aldığınız Netscape <code>cookies.txt</code> dosyasını yükleyin veya yapıştırın. Çerezler %100 yerel işlenir ve dışarı aktarılmaz.
+        </p>
+
+        <textarea class="cookie-textarea" id="cookieTextInput" placeholder="# Netscape HTTP Cookie File&#10;.youtube.com    TRUE    /    TRUE    1798765432    LOGIN_INFO    ..."></textarea>
+        <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+          <button class="btn-sm" id="saveCookieTextBtn" style="background: var(--accent); color: #08080a; font-weight: 800;">Çerezleri Kaydet</button>
+        </div>
+      </div>
+
+      <!-- Engine Status -->
+      <div class="settings-section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Medya Motoru Durumu</span>
+      </div>
+      <div class="settings-card">
+        <div class="settings-info">
+          <h4>Gömülü Yüksek Performanslı FFmpeg</h4>
+          <p id="ffmpegStatusText">4K video muxing ve ses dönüştürme aktif</p>
+        </div>
+        <span class="badge-pro">Aktif</span>
+      </div>
+
+      <!-- Hakkında (About Section) -->
+      <div class="settings-section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>Hakkında & Geliştirici</span>
+      </div>
+      <div class="settings-card" style="align-items: flex-start; padding: 20px;">
+        <div class="settings-info" style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <h4 style="font-size: 14px; font-weight: 800;">MerVid Studio</h4>
+            <span class="badge-pro" style="font-size: 10px;">v1.0.0</span>
+          </div>
+          <p style="margin-bottom: 12px; line-height: 1.5; color: var(--text-dim);">
+            Geliştirici: <strong style="color: #ffffff;">Oğuzhan Mercan</strong> • Modern, açık kaynaklı, yüksek hızlı medya ve 4K video indirme stüdyosu.
+          </p>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="btn-sm" onclick="openExternalUrl('https://github.com/oguxmercan')" style="background: rgba(44, 240, 158, 0.12); border-color: rgba(44, 240, 158, 0.4); color: var(--accent); display: flex; align-items: center; gap: 8px; padding: 7px 16px; cursor: pointer;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              <span>github.com/oguxmercan</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation Dock (Exact match to screenshot) -->
+  <footer class="bottom-dock">
+    <!-- Tab 1: İndirici -->
+    <button class="dock-item active" data-tab="indirici">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      <span>İndirici</span>
+    </button>
+
+    <!-- Tab 2: İndirilenler -->
+    <button class="dock-item" data-tab="indirilenler">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v12"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <path d="M5 21h14"></path>
+      </svg>
+      <span>İndirilenler</span>
+      <span class="dock-badge" id="activeDlBadge" style="display: none;">0</span>
+    </button>
+
+    <!-- Tab 3: Geçmiş -->
+    <button class="dock-item" data-tab="gecmis">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span>Geçmiş</span>
+    </button>
+
+    <!-- Tab 4: Ayarlar (Contains Settings + Cookie Vault) -->
+    <button class="dock-item" data-tab="ayarlar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span>Ayarlar</span>
+    </button>
+  </footer>
+
+  <!-- Notification Toast -->
+  <div id="toast">Bildirim</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
