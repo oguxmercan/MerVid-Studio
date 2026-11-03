@@ -13,21 +13,23 @@ def get_ffmpeg_path():
     """
     # 1. Check PyInstaller _MEIPASS
     if hasattr(sys, '_MEIPASS'):
-        meipass_ffmpeg = os.path.join(sys._MEIPASS, 'ffmpeg.exe')
-        if os.path.isfile(meipass_ffmpeg):
-            return meipass_ffmpeg
-        meipass_bin = os.path.join(sys._MEIPASS, 'binaries', 'ffmpeg.exe')
-        if os.path.isfile(meipass_bin):
-            return meipass_bin
+        for name in ['ffmpeg.exe', 'ffmpeg']:
+            p1 = os.path.join(sys._MEIPASS, name)
+            if os.path.isfile(p1):
+                return p1
+            p2 = os.path.join(sys._MEIPASS, 'binaries', name)
+            if os.path.isfile(p2):
+                return p2
 
     # 2. Check local application directory
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    local_ffmpeg = os.path.join(base_dir, 'ffmpeg.exe')
-    if os.path.isfile(local_ffmpeg):
-        return local_ffmpeg
-    local_bin = os.path.join(base_dir, 'binaries', 'ffmpeg.exe')
-    if os.path.isfile(local_bin):
-        return local_bin
+    for name in ['ffmpeg.exe', 'ffmpeg']:
+        p1 = os.path.join(base_dir, name)
+        if os.path.isfile(p1):
+            return p1
+        p2 = os.path.join(base_dir, 'binaries', name)
+        if os.path.isfile(p2):
+            return p2
 
     # 3. Check imageio_ffmpeg
     try:

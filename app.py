@@ -128,14 +128,15 @@ class DownloaderApi:
     def open_file(self, filepath: str) -> bool:
         if filepath and os.path.isfile(filepath):
             try:
-                os.startfile(filepath)
+                if sys.platform == 'win32':
+                    os.startfile(filepath)
+                elif sys.platform == 'darwin':
+                    subprocess.Popen(['open', filepath])
+                else:
+                    subprocess.Popen(['xdg-open', filepath])
                 return True
             except Exception:
-                try:
-                    subprocess.Popen(['explorer', filepath])
-                    return True
-                except Exception:
-                    return False
+                return False
         return False
 
     def open_folder(self, filepath: str) -> bool:
@@ -144,10 +145,18 @@ class DownloaderApi:
         target_dir = filepath if os.path.isdir(filepath) else os.path.dirname(filepath)
         if os.path.exists(target_dir):
             try:
-                if os.path.isfile(filepath):
-                    subprocess.Popen(['explorer', '/select,', os.path.normpath(filepath)])
+                if sys.platform == 'win32':
+                    if os.path.isfile(filepath):
+                        subprocess.Popen(['explorer', '/select,', os.path.normpath(filepath)])
+                    else:
+                        os.startfile(target_dir)
+                elif sys.platform == 'darwin':
+                    if os.path.isfile(filepath):
+                        subprocess.Popen(['open', '-R', filepath])
+                    else:
+                        subprocess.Popen(['open', target_dir])
                 else:
-                    os.startfile(target_dir)
+                    subprocess.Popen(['xdg-open', target_dir])
                 return True
             except Exception:
                 return False
